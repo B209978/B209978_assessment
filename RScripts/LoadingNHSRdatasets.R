@@ -238,9 +238,11 @@ write_csv(ae, here("RawData", "ae_attendances.csv"))
 ae<-ae %>% select(index, period, org_code, type, attendances, breaches, admissions)%>% 
   filter(org_code == "RKB"|org_code == "RRK"|org_code == "RXK"|org_code == "RLT"| org_code == "RJC"|
            org_code == "RWP"|org_code == "RLQ"|org_code == "RJE"| org_code == "RL4"|org_code == "RNA"|
-           org_code == "RBK"|org_code == "RQW"|org_code == "RXW"|type == 1) %>% 
+           org_code == "RBK"|org_code == "RQW"|org_code == "RXW",type == 1) %>% 
   select(-type)
 
+
+ae 
 
 ### Let's tabulate the subsetted ae_attendances data
 ae %>%
@@ -263,9 +265,26 @@ WM_performance <- ae %>%
   mutate(performance = 1 - breaches / attendances)
 glimpse(WM_performance)
 
-ae %>% 
-  mutate(breach_performance = 1 - breaches / attendances,
-         admission_rate = admissions / attendances)
+WM_admission <- ae %>%
+  group_by(period) %>%
+  summarise_at(vars(attendances, admissions), sum) %>%
+  mutate(admission = admissions / attendances)
+glimpse(WM_admission)
+
+WM_attendance <- ae %>%
+  group_by(period) %>%
+  summarise_at(vars(attendances), sum)
+glimpse(WM_admission)
+
+ae
+
+# ae<- ae %>% 
+#   mutate(breach_performance = 1 - breaches / attendances,
+#          admission_rate = admissions / attendances) %>% 
+#   select(-breaches, -admissions)
+
+ae
+
 
 ### Let's visualise monthly four hour waiting time target performance before we save or raw data file.
 #ggplot2 is a powerful package to draw graphics. It implements the grammar of graphics (and hence its name).
@@ -282,6 +301,26 @@ ggplot(WM_performance, aes(period, performance)) +
   labs(x = "Month of attendance",
        y = "% of A&E attendances that met the four hour standard",
        title = "WM accident and emergency (A&E) four hour performance",
+       caption = "Source: NHSRdatasets")
+
+ggplot(WM_admission, aes(period, admission)) +
+  geom_line(color = "darkcyan") +
+  geom_point(color = "darkcyan") +
+  scale_y_continuous(labels = percent) +
+  scale_x_date(date_labels = "%b-%y", date_breaks = "12 month")+
+  labs(x = "Month of attendance",
+       y = "% of A&E attendances that result in admission",
+       title = "WM accident and emergency (A&E) admission rate",
+       caption = "Source: NHSRdatasets")
+
+ggplot(WM_attendance, aes(period, attendances)) +
+  geom_line(color = "darkcyan") +
+  geom_point(color = "darkcyan") +
+  scale_y_continuous() +
+  scale_x_date(date_labels = "%b-%y", date_breaks = "12 month")+
+  labs(x = "Month of attendance",
+       y = "Number of A&E attendances",
+       title = "WM accident and emergency (A&E) attendance rate",
        caption = "Source: NHSRdatasets")
 
 #The National Health Service (NHS) is always under considerable pressure over the winter period as demand for services tends 
@@ -356,7 +395,7 @@ aeTrain %>%
 
 
 ### Our next task, it to save ae_attendances_ENG_4hr_perfom training data to your working data folder 'Data'
-write_csv(aeTrain, here("Data", "ae_attendances_ENG_4hr_perfom_train.csv"))
+write_csv(aeTrain, here("Data", "ae_attendances_WM_4hr_perfom_train.csv"))
 
 
 ### Let's extract the ae_attendances_ENG_4hr_perfom test data
@@ -380,7 +419,7 @@ aeTestMarker  %>%
   kable()
 
 ### Our next task, it to save our ae_attendances_ENG_4hr_perfom marker test data to our working data folder 'Data'
-write_csv(aeTestMarker, here("Data", "ae_attendances_ENG_4hr_perfom_test_marker.csv"))
+write_csv(aeTestMarker, here("Data", "ae_attendances_WM_4hr_perfom_test_marker.csv"))
 
 ### We then need to set aside the remaining records for you to test (or collect with your) your data-capture tool.
 aeTest  <- aeTest[2:nrow(aeTest),]
@@ -402,3 +441,4 @@ write_csv(aeTest, here("Data", "ae_attendances_test.csv"))
 
 
 # You are now ready to start exploring your data. Happy coding!
+
