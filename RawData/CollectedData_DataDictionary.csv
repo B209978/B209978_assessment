@@ -1,19 +1,19 @@
 variable name,variable description,variable options,notes
-admission_rate,The rate of admission (admissions/attendances),0.237557194882809 to 2.11088709677419,
-admissions,The number of attendances that resulted in an admission to the hospital.,1437 to 4407,
-attendances,The number of attendances for this department type at this organisation for this month.,1488 to 13805,
-breach_performance,The performance ([1 - breaches]/attendances),-0.43010752688172 to 0.933385492343802,
-breaches,The number of attendances that breached the four-hour target.,297 to 4432,
-consent,The consent from the end-user to process and share the data collected with the data capture tool.,TRUE,
-index,The index column that allows us to link the data collected to the original ae_attendances data in the 'RawData' folder.,2881 to 12530,
-org_code,"The Organisation data service (ODS) code for the organisation. If you want to know the organisation associated with a particular ODS code, you can look it up from the following address: https://odsportal.digital.nhs.uk/Organisation/Search.",RXK,
- , ,RNA,
- , ,RRK,
- , ,RLQ,
- , ,RWP,
- , ,RJC,
- , ,RKB,
- , ,RL4,
+admission_rate,The rate of admission (admissions/attendances),0.237557194882809 to 2.11088709677419,"""Percentage of patients attending accident and emergency that are admitted to hospital"""
+admissions,The number of attendances that resulted in an admission to the hospital.,1437 to 4407,"""Number of patients admitted to hospital following attendance at accident and emergency"""
+attendances,The number of attendances for this department type at this organisation for this month.,1488 to 13805,"""Number of patients that attended accident and emergency in a month"""
+breach_performance,The performance ([1 - breaches]/attendances),-0.43010752688172 to 0.933385492343802,"""How successful a department is at reaching 4 hour target"""
+breaches,The number of attendances that breached the four-hour target.,297 to 4432,"""Number of missed 4 hour targets in a month"""
+consent,The consent from the end-user to process and share the data collected with the data capture tool.,TRUE,"""Has patient given consent to process data"""
+index,The index column that allows us to link the data collected to the original ae_attendances data in the 'RawData' folder.,2881 to 12530,"""Link to original dataset"""
+org_code,"The Organisation data service (ODS) code for the organisation. If you want to know the organisation associated with a particular ODS code, you can look it up from the following address: https://odsportal.digital.nhs.uk/Organisation/Search.",RXK,"""SANDWELL AND WEST BIRMINGHAM HOSPITALS NHS TRUST"""
+ , ,RNA,"""THE DUDLEY GROUP NHS FOUNDATION TRUST"""
+ , ,RRK,"""UNIVERSITY HOSPITALS BIRMINGHAM NHS FOUNDATION TRUST"""
+ , ,RLQ,"""WYE VALLEY NHS TRUST"""
+ , ,RWP,"""WORCESTERSHIRE ACUTE HOSPITALS NHS TRUST"""
+ , ,RJC,"""SOUTH WARWICKSHIRE NHS FOUNDATION TRUST"""
+ , ,RKB,"""UNIVERSITY HOSPITALS COVENTRY AND WARWICKSHIRE NHS TRUST"""
+ , ,RL4,"""THE ROYAL WOLVERHAMPTON NHS TRUST"""
 period,"The month that this activity relates to, stored as a date (1st of each month).",16983,
  , ,17591,
  , ,17532,
