@@ -3,8 +3,8 @@ title: '**Constructing a data dictionary and appending it to your data in R**'
 author: "Mairead Bermingham"
 date: "`r format (Sys.time (), '%d %B, %Y')`"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
  
 ```{r setup, include=FALSE}
