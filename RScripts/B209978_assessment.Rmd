@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # **R code to extract relevant data**
-link to GitHub repo
+*https://github.com/B209978/B209978_assessment/tree/master/AssessmentFiles*
 
 ## Loading packages including NHSR dataset
 
@@ -297,4 +297,6 @@ complete_CollectedData<-readRDS(here("RawData", "complete_CollectedData.rds"))
 
 # Data capture tool (Python)  
 
-Perfomed in Python. Jupyter widgets designed to capture data from relevant hospitals. Performance and admission rate metrics calculated and inputted using simple block of Python code.
+Perfomed in Python. Jupyter widgets designed to capture data from relevant hospitals. Performance and admission rate metrics calculated and inputted using simple block of Python code.  
+
+Please find here: *https://github.com/B209978/B209978_assessment/tree/master/AssessmentFiles*
