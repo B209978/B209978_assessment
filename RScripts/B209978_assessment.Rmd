@@ -2,7 +2,9 @@
 title: "Asessment Rmd file"
 author: "B209978"
 date: "17/06/2022"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
