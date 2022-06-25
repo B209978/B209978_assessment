@@ -1,0 +1,302 @@
+---
+title: "Asessment Rmd file"
+author: "B209978"
+date: "17/06/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **R code to extract relevant data**
+*https://github.com/B209978/B209978_assessment/tree/master/AssessmentFiles*
+
+## Loading packages including NHSR dataset
+
+```{r Loading_datasets, message=FALSE, warning=FALSE}
+# required packages are:
+library(NHSRdatasets)
+library(tidyverse)
+library(knitr)
+library(here)
+library(scales)
+library(caret)
+library(dataMeta)
+```
+
+### Load and explore NHS England A&E attendance data
+#### Examining structure and completeness of dataset
+``` {r load_data, echo=FALSE}
+# review dataset and display any missing values
+data(ae_attendances)
+ae<-ae_attendances
+glimpse(ae)
+ae
+ae %>% 
+  map(is.na) %>%
+map(sum)
+```
+
+### Adding index for later linkage
+``` {r index_and_save, echo=FALSE}
+# add index column
+ae <- rowid_to_column(ae, "index")
+# display for confirmation
+ae %>%
+  # Set the period column to show in month-year format
+  mutate_at(vars(period), format, "%b-%y") %>% 
+  # Set the numeric columns to have a comma at the 1000's place
+  mutate_at(vars(attendances, breaches, admissions), comma) %>%
+  # Show the first 10 rows
+  head(10) %>%
+  # Format as a table
+  kable()
+# save file
+write_csv(ae, here("RawData", "ae_attendances.csv"))
+```
+
+### Filter data
+#### Removed all hospitals except consultant led Emergency Departments covered by selected ambulance service
+
+``` {r, filter_data, echo=FALSE}
+# filter to include certain hospitals
+# filter to include type 1 hospitals
+# filter to remove type column
+ae<-ae %>% select(index, period, org_code, type, attendances, breaches, admissions)%>% 
+  filter(org_code == "RKB"|org_code == "RRK"|org_code == "RXK"|org_code == "RLT"| org_code == "RJC"|
+           org_code == "RWP"|org_code == "RLQ"|org_code == "RJE"| org_code == "RL4"|org_code == "RNA"|
+           org_code == "RBK"|org_code == "RQW"|org_code == "RXW",type == 1) %>% 
+  select(-type)
+
+ae
+```
+
+
+### Calculate metrics
+
+``` {r calculations, echo=FALSE}
+# calculate and view breach performance
+WM_performance <- ae %>%
+  group_by(period) %>%
+  summarise_at(vars(attendances, breaches), sum) %>%
+  mutate(breach_performance = 1 - breaches / attendances)
+# glimpse(WM_performance)
+
+# calculate and view admission rate
+WM_admission <- ae %>%
+  group_by(period) %>%
+  summarise_at(vars(attendances, admissions), sum) %>%
+  mutate(admission_rate = admissions / attendances)
+# glimpse(WM_admission)
+
+# calculate and view regional attendances
+WM_attendance <- ae %>%
+  group_by(period) %>%
+  summarise_at(vars(attendances), sum)
+# glimpse(WM_attendance)
+
+WM_metrics<-ae %>% 
+  group_by(period) %>% 
+  summarise_at(vars(attendances, breaches, admissions), sum) %>% 
+  mutate(breach_performance = 1 - breaches / attendances,
+         admission_rate = admissions / attendances)
+glimpse(WM_metrics)
+
+```
+
+### Brief visualisation of regional patterns
+``` {r graphs, echo=FALSE}
+# plot performance
+ggplot(WM_performance, aes(period, breach_performance)) +
+  geom_line(color = "darkcyan") +
+  geom_point(color = "darkcyan") +
+  scale_y_continuous(labels = percent) +
+  scale_x_date(date_labels = "%b-%y", date_breaks = "12 month")+
+  labs(x = "Month of attendance",
+       y = "% of A&E attendances that met the four hour standard",
+       title = "Diminishing accident and emergency (A&E) performance",
+       caption = "Source: NHSRdatasets")
+
+# plot admission rate
+ggplot(WM_admission, aes(period, admission_rate)) +
+  geom_line(color = "darkcyan") +
+  geom_point(color = "darkcyan") +
+  scale_y_continuous(labels = percent) +
+  scale_x_date(date_labels = "%b-%y", date_breaks = "12 month")+
+  labs(x = "Month of attendance",
+       y = "% of A&E attendances that result in admission",
+       title = "Increasing accident and emergency (A&E) admission rate",
+       caption = "Source: NHSRdatasets")
+
+# plot regional admissions
+ggplot(WM_attendance, aes(period, attendances)) +
+  geom_line(color = "darkcyan") +
+  geom_point(color = "darkcyan") +
+  scale_y_continuous() +
+  scale_x_date(date_labels = "%b-%y", date_breaks = "12 month")+
+  labs(x = "Month of attendance",
+       y = "Number of A&E attendances",
+       title = "Increasing accident and emergency (A&E) attendances",
+       caption = "Source: NHSRdatasets")
+```
+
+### Save data subset
+``` {r save_subset, echo=FALSE}
+# view subset
+glimpse(ae)
+# save subset
+write_csv(ae, here("RawData", "ae_attendances_WM_4hr_perfom.csv"))
+```
+
+### Divide dataset into training, marker and test
+``` {r divide_dataset, echo=FALSE}
+# confirm length of dataset
+# nrow(ae)
+
+
+# calculate proportion needed for small training datset 
+prop<-(1-(15/nrow(ae)))
+
+# ensure consistant random number generator
+set.seed(333)
+# create training partition
+trainIndex <- createDataPartition(ae$index, p = prop, 
+                                  list = FALSE, 
+                                  times = 1)
+# assign partition
+aeTrain <- ae[ trainIndex,]
+
+# view training partition
+aeTrain %>%
+  # set the period column to show in Month-Year format
+  mutate_at(vars(period), format, "%b-%y") %>% 
+  # set the numeric columns to have a comma at the 1000's place
+  mutate_at(vars(attendances, breaches), comma) %>%
+  # show the first 10 rows
+  head(10) %>%
+  # format as a table
+  kable()
+
+# save training partition
+write_csv(aeTrain, here("Data", "ae_attendances_WM_4hr_perfom_train.csv"))
+
+# assign test partition
+aeTest  <- ae[-trainIndex,]
+
+# confirm length of test data
+# nrow(aeTest)
+
+# assign marker record
+aeTestMarker  <- aeTest[1,]
+# view
+aeTestMarker  %>%
+  # set the period column to show in Month-Year format
+  mutate_at(vars(period), format, "%b-%y") %>% 
+  # set the numeric columns to have a comma at the 1000's place
+  mutate_at(vars(attendances, breaches), comma) %>%
+  # show the first 10 rows
+  head(10) %>%
+  # format as a table
+  kable()
+
+
+# save marker record
+write_csv(aeTestMarker, here("Data", "ae_attendances_WM_4hr_perfom_test_marker.csv"))
+
+# reassign test partition without marker record
+aeTest  <- aeTest[2:nrow(aeTest),]
+# view
+aeTest  %>%
+  # set the period column to show in Month-Year format
+  mutate_at(vars(period), format, "%b-%y") %>% 
+  # set the numeric columns to have a comma at the 1000's place
+  mutate_at(vars(attendances, breaches), comma) %>%
+  # show the first 10 rows
+  head(10) %>%
+  # format as a table
+  kable()
+
+# save test data
+write_csv(aeTest, here("Data", "ae_attendances_test.csv"))
+```
+# Data dictionary
+
+### Read in data collected in Python
+```{r read_data, echo =FALSE, message=FALSE}
+# read data
+CollectedData=read_csv(here("RawData", "CollectedDataFinal.csv"))
+# view
+glimpse(CollectedData)
+```
+
+### Build linker data frame with variable descriptions and types
+
+``` {r variables_and_linker, echo=FALSE}
+# variable descriptions
+variable_description <- c("The index column that allows us to link the data collected to the original ae_attendances data in the 'RawData' folder.",
+"The month that this activity relates to, stored as a date (1st of each month).",
+"The Organisation data service (ODS) code for the organisation. If you want to know the organisation associated with a particular ODS code, you can look it up from the following address: https://odsportal.digital.nhs.uk/Organisation/Search.",
+"The number of attendances for this department type at this organisation for this month.", 
+"The number of attendances that breached the four-hour target.",  
+"The number of attendances that resulted in an admission to the hospital.",
+"The performance ([1 - breaches]/attendances)",
+"The rate of admission (admissions/attendances)",
+"The consent from the end-user to process and share the data collected with the data capture tool.")
+print(variable_description)
+
+# variable types
+variable_type <- c(0, 1, 1, 0, 0, 0, 0, 0, 1)
+print(variable_type)
+
+# linker
+linker<-build_linker(CollectedData, variable_description, variable_type)
+print(linker)
+```
+
+### Use linker dataframe to create data dictionary
+
+``` {r build_dictionary, echo=FALSE, results='hide'}
+# build dictionary
+dictionary <- build_dict(my.data = CollectedData, linker = linker)
+```
+
+
+``` {r view_save_dict, echo=FALSE}
+# view
+
+head(dictionary)
+# save
+write_csv(dictionary, here("RawData", "CollectedData_DataDictionary.csv"))
+````
+
+### Appending data dictionary to collected data
+
+``` {r appending_data_dict, echo=FALSE}
+# create main string to describe collected data
+main_string <- "This data describes accident and emergency (A&E) metrics for hospital trusts within the chosen ambulance service region. Data source: NHSRdatasets package"
+# view
+main_string
+
+# append dictionary
+complete_CollectedData <- incorporate_attr(my.data = CollectedData, data.dictionary = dictionary,
+main_string = main_string)
+#Change the author name
+attributes(complete_CollectedData)$author[1]<-"B209978"
+# view data
+complete_CollectedData
+# view metadata
+attributes(complete_CollectedData)
+#save file
+save_it(complete_CollectedData, here("RawData", "complete_CollectedData"))
+#view file
+complete_CollectedData<-readRDS(here("RawData", "complete_CollectedData.rds"))
+```
+
+# Data capture tool (Python)  
+
+Perfomed in Python. Jupyter widgets designed to capture data from relevant hospitals. Performance and admission rate metrics calculated and inputted using simple block of Python code.  
+
+Please find here: *https://github.com/B209978/B209978_assessment/tree/master/AssessmentFiles*
