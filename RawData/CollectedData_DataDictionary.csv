@@ -1,8 +1,8 @@
 variable name,variable description,variable options,notes
-admission_rate,The rate of admission (admissions/attendances),0.237557194882809 to 2.11088709677419,
+admission_rate,The rate of admission (admissions/attendances),0.216800110436223 to 0.392109500805153,
 admissions,The number of attendances that resulted in an admission to the hospital.,1437 to 4407,
-attendances,The number of attendances for this department type at this organisation for this month.,1488 to 13805,
-breach_performance,The performance ([1 - breaches]/attendances),-0.43010752688172 to 0.933385492343802,
+attendances,The number of attendances for this department type at this organisation for this month.,4532 to 14488,
+breach_performance,The breach performance ([1 - breaches]/attendances),0.674213466627463 to 0.948890036138358,
 breaches,The number of attendances that breached the four-hour target.,297 to 4432,
 consent,The consent from the end-user to process and share the data collected with the data capture tool.,TRUE,
 index,The index column that allows us to link the data collected to the original ae_attendances data in the 'RawData' folder.,2881 to 12530,

@@ -3,8 +3,8 @@ title: '**Constructing a data dictionary and appending it to your data in R**'
 author: "Mairead Bermingham"
 date: "`r format (Sys.time (), '%d %B, %Y')`"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
  
 ```{r setup, include=FALSE}
@@ -115,11 +115,11 @@ dictionary <- build_dict(my.data = CollectedData, linker = linker)
 glimpse(dictionary)
 ```
 ```{r notes}
-# dictionary[7,4]<-"RDZ: NHS Trust - The Royal Bournemouth and Christchurch Hospitals NHS Foundation Trust."
-# #You should do that for all Organisation data service (ODS) in the data dictionary
-# dictionary[27,4] <-"other: Other types of A&E/minor injury activity with designated accommodation for the reception of accident and emergency patients."
-# dictionary[28,4]<- "1: Emergency departments are a consultant-led 24-hour service with full resuscitation facilities and designated accommodation for the reception of accident and emergency patients."
-# dictionary[29,4] <- "2: Consultant-led mono speciality accident and emergency service (e.g. ophthalmology, dental) with designated accommodation for the reception of patients. other: Other types of A&E/minor injury activity with designated accommodation for the reception of accident and emergency patients."
+dictionary[7,4]<-"RDZ: NHS Trust - The Royal Bournemouth and Christchurch Hospitals NHS Foundation Trust."
+#You should do that for all Organisation data service (ODS) in the data dictionary
+dictionary[27,4] <-"other: Other types of A&E/minor injury activity with designated accommodation for the reception of accident and emergency patients."
+dictionary[28,4]<- "1: Emergency departments are a consultant-led 24-hour service with full resuscitation facilities and designated accommodation for the reception of accident and emergency patients."
+dictionary[29,4] <- "2: Consultant-led mono speciality accident and emergency service (e.g. ophthalmology, dental) with designated accommodation for the reception of patients. other: Other types of A&E/minor injury activity with designated accommodation for the reception of accident and emergency patients."
 ```
  
 

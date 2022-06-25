@@ -242,7 +242,7 @@ variable_description <- c("The index column that allows us to link the data coll
 "The number of attendances for this department type at this organisation for this month.", 
 "The number of attendances that breached the four-hour target.",  
 "The number of attendances that resulted in an admission to the hospital.",
-"The performance ([1 - breaches]/attendances)",
+"The breach performance ([1 - breaches]/attendances)",
 "The rate of admission (admissions/attendances)",
 "The consent from the end-user to process and share the data collected with the data capture tool.")
 print(variable_description)
